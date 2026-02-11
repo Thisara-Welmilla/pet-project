@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Tranquil Plate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --bg:#f6fbfb;
+            --card:#ffffff;
+            --muted:#65707a;
+            --ink:#0f1720;
+            --accent:#0ea5a4;
+            --accent-2:#7c3aed;
+            --soft-shadow: 0 18px 40px rgba(15,23,32,0.06);
+            --glass: rgba(255,255,255,0.6);
+            --promo-height:56px;
+            --sea:#0b6c74;
+        }
+        *{box-sizing:border-box}
+        html,body{height:100%}
+        body{
+            margin:0;
+            font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;
+            background:linear-gradient(180deg,#f7fbfb 0%,#eef6fb 100%);
+            color:var(--ink);
+            -webkit-font-smoothing:antialiased;
+            -moz-osx-font-smoothing:grayscale;
+            display:flex;
+            flex-direction:column;
+            min-height:100vh;
+            padding-bottom:calc(var(--promo-height) + 36px);
+        }
+        header{padding:24px 6vw;display:flex;align-items:center;justify-content:space-between}
+        .logo{font-weight:700;letter-spacing:0.6px;color:var(--ink)}
+        /* header when overlapping the hero */
+        header.overlap{position: absolute;left:0;right:0;top:0;padding:20px 6vw;background:transparent;z-index:60}
+        header.overlap .logo{color:white}
+        header.overlap .nav-link{color:rgba(255,255,255,0.95);text-decoration:none;font-weight:600;margin-right:12px}
+        header.overlap .visit-btn{background:rgba(255,255,255,0.12);color:white;padding:8px 12px;border-radius:10px;text-decoration:none;font-weight:600}
+
+        /* HERO */
+        .hero{
+            /* full-bleed hero across the viewport (uses .hero-bg for parallax) */
+            margin:0;
+            width:100vw;
+            max-width:none;
+            margin-left:calc(50% - 50vw);
+            margin-right:calc(50% - 50vw);
+            border-radius:0;
+            overflow:hidden;
+            box-shadow:none;
+            position:relative;
+            color:white;
+        }
+        .hero-bg{position:absolute;inset:0;background-image:url('resources/img/hero-image.jpg');background-size:cover;background-position:center;will-change:transform;transform:translate3d(0,0,0)}
+        /* removed overlay so the photo reads cleanly; hero-inner sits above .hero-bg */
+        .hero{min-height:72vh;display:flex;align-items:center;position:relative}
+        /* subtle dark vignette + overlay to improve text contrast */
+        .hero::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.08) 0%,rgba(0,0,0,0.45) 100%),radial-gradient(ellipse at center, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0.35) 70%);pointer-events:none;z-index:6}
+        .hero-inner{position:relative;padding:96px 6vw;display:flex;flex-direction:column;gap:18px;z-index:12}
+        .hero .eyebrow{font-size:0.95rem;background:rgba(255,255,255,0.12);padding:8px 12px;border-radius:999px;display:inline-block;font-weight:600}
+        .hero h1{font-size:clamp(2rem,4vw,3rem);margin:6px 0 0;text-shadow:0 20px 50px rgba(0,0,0,0.7);line-height:1.03}
+        .hero p{max-width:780px;color:rgba(255,255,255,0.98);font-weight:500;text-shadow:0 10px 28px rgba(0,0,0,0.45);}
+        /* Panel reset: remove the box behind hero text */
+        .hero-panel{background:none;padding:0;border-radius:0;display:block;backdrop-filter:none;box-shadow:none}
+        .hero-panel h1,.hero-panel p,.hero-panel .eyebrow{color:white}
+        .hero .cta{display:flex;gap:12px;margin-top:14px}
+        .btn{display:inline-flex;align-items:center;gap:10px;padding:12px 18px;border-radius:12px;text-decoration:none;font-weight:600}
+        .btn-primary{background:var(--accent);color:white;box-shadow:0 8px 24px rgba(14,165,164,0.18)}
+        .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.18);color:white}
+
+        /* CONTENT CONTAINER */
+        .container{max-width:1200px;margin:0 auto}
+
+        /* ABOUT BAND (full-bleed wrapper, centered inner container) */
+        .about-band{width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);padding:54px 6vw 54px;background:linear-gradient(90deg,#ffffff,#fbfbff);border-radius:0;box-shadow:var(--soft-shadow);display:block;position:relative;z-index:30}
+        .about-band .inner{display:flex;gap:20px;align-items:center}
+        .about-band p{margin:0;color:var(--muted);line-height:1.5}
+        /* visible by default; when scrolled, lift upward to overlap hero */
+        .about-band.scroll-reveal{transform:none;opacity:1;transition:transform .7s cubic-bezier(.2,.9,.3,1),opacity .6s}
+        .about-band.scroll-reveal.lift{transform:translateY(-120px);z-index:50}
+
+        /* GALLERY */
+        .gallery{width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);padding:8px 0 0;position:relative;z-index:20}
+        .gallery.scroll-reveal{transform:none;opacity:1;transition:transform .7s cubic-bezier(.2,.9,.3,1),opacity .6s}
+        .gallery.scroll-reveal.lift{transform:translateY(-80px);z-index:40}
+        .gallery-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;max-width:none;margin:0;width:100%}
+        .gallery-grid img{width:100%;aspect-ratio:1/1;display:block;margin:0;border-radius:6px;object-fit:cover;transition:transform .45s cubic-bezier(.2,.9,.3,1),box-shadow .35s ease,opacity .45s ease;opacity:1;will-change:transform,opacity}
+        /* staggered reveal state */
+        .gallery-grid img.hidden{opacity:0;transform:translateY(18px) scale(.995)}
+        .gallery-grid img.in{opacity:1;transform:none}
+        .gallery-grid img:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(12,18,22,0.12)}
+
+        /* FOOTER BAND (single full-bleed band containing Contact / Visit / Follow) */
+        .footer-band{width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);padding:32px 6vw;background:linear-gradient(180deg,#ffffff,#fbfbff);box-shadow:var(--soft-shadow);position:relative;padding-bottom:calc(32px + var(--promo-height))}
+        .footer-band .footer-grid{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:14px}
+        .footer-card{background:transparent;padding:8px 12px;border-radius:8px;min-width:0}
+        .footer-card h4{margin:0 0 8px}
+        .muted{color:var(--muted);font-size:0.95rem;overflow-wrap:anywhere}
+        .footer-card a{color:var(--accent);text-decoration:underline}
+        .wa-icon{display:inline-flex;align-items:center;gap:6px}
+        .wa-icon svg{width:16px;height:16px;fill:currentColor;flex:0 0 16px;transform:translateY(2px)}
+
+        @media(max-width:900px){
+            .hero{min-height:60vh}
+            .hero-inner{padding:64px 5vw}
+            .footer-band{width:100%;margin-left:0;margin-right:0}
+            .footer-card{width:100%;text-align:center}
+        }
+        @media(min-width:901px){
+            .footer-band .footer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:start}
+            .footer-card{width:auto;text-align:left}
+        }
+
+        .promo-band{
+            position:fixed;
+            left:0;
+            right:0;
+            bottom:0;
+            background:rgba(11,108,116,0.70);
+            color:#fff;
+            text-align:center;
+            padding:14px 6vw;
+            font-weight:700;
+            letter-spacing:0.2px;
+            z-index:110;
+            box-shadow:0 -16px 34px rgba(15,23,32,0.22);
+            border-top:1px solid rgba(255,255,255,0.22);
+            backdrop-filter:blur(6px);
+            min-height:var(--promo-height);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            overflow:hidden;
+        }
+        .promo-dino{
+            position:absolute;
+            left:-10%;
+            bottom:8px;
+            width:46px;
+            height:46px;
+            display:block;
+            animation:dinoMove 9s linear infinite;
+            z-index:1;
+        }
+        .promo-dino .dino-hop{
+            width:100%;
+            height:100%;
+            animation:dinoHop 1.6s ease-in-out infinite;
+        }
+        .promo-dino svg{
+            width:100%;
+            height:100%;
+            display:block;
+            filter:drop-shadow(0 6px 10px rgba(0,0,0,0.25));
+        }
+        .promo-band .promo-btn{z-index:2}
+        .promo-btn{
+            background:#fff;
+            color:var(--sea);
+            border:2px solid #fff;
+            border-radius:999px;
+            padding:12px 26px;
+            font-weight:700;
+            font-size:1rem;
+            letter-spacing:0.3px;
+            cursor:pointer;
+            box-shadow:0 10px 24px rgba(6,36,38,0.22);
+            transition:transform .2s ease, box-shadow .2s ease, background-color .2s ease, color .2s ease;
+            animation:promoBounce 2.8s ease-in-out infinite;
+        }
+        .promo-btn:hover{transform:translateY(-1px);box-shadow:0 14px 28px rgba(6,36,38,0.25)}
+        .promo-btn:active{transform:translateY(0);box-shadow:0 10px 22px rgba(6,36,38,0.2)}
+        .promo-btn:focus-visible{outline:3px solid rgba(255,255,255,0.65);outline-offset:3px}
+        @keyframes promoBounce{
+            0%, 100%{transform:translateY(0)}
+            45%{transform:translateY(-6px)}
+            65%{transform:translateY(2px)}
+        }
+        @keyframes dinoMove{
+            0%{transform:translateX(-10vw)}
+            100%{transform:translateX(110vw)}
+        }
+        @keyframes dinoHop{
+            0%, 100%{transform:translateY(0)}
+            50%{transform:translateY(-10px)}
+        }
+        @media (prefers-reduced-motion: reduce){
+            .promo-dino{animation:none}
+        }
+        @media(max-width:700px){
+            .about-band .inner{flex-direction:column;align-items:flex-start}
+            .hero{min-height:50vh}
+            .hero-inner{padding:40px 5vw}
+        }
+    </style>
+</head>
+<body>
+    <header class="overlap">
+        <div class="logo">Tranquil Plate</div>
+        <nav aria-label="top">
+            <a href="#" class="nav-link">Shop</a>
+            <a href="#" class="visit-btn">Visit</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" role="banner">
+            <div class="hero-bg" aria-hidden="true" style="background-image:url('resources/img/hero-image.jpg')" th:style="|background-image: url('@{/img/hero-image.jpg}')|"></div>
+            <div class="hero-inner">
+                <div class="hero-panel">
+                    <div class="eyebrow">Handcrafted • Locally Sourced • Timeless</div>
+                    <h1>Tranquil Plate - A peaceful place for flavorful moments</h1>
+                    <p>Where every plate is carefully crafted to delight the senses, in a serene and inviting setting. Find your new favorite dish here.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-band scroll-reveal" aria-labelledby="about">
+            <div class="container inner">
+                <div style="flex:1">
+                    <h3 id="about" style="margin:0 0 8px">About Us</h3>
+                    <p>We are a modern dining destination where every detail is curated from our plates to our ambiance. Our menu blends seasonal ingredients, classic techniques, and innovative flavors to create a dining experience that is both comforting and exciting. We invite you to slow down, savor each bite, and discover new favorites in a space designed for calm, connection, and culinary delight.</p>
+                </div>
+                
+            </div>
+        </section>
+
+        <section id="gallery" class="gallery scroll-reveal" aria-label="Shop images">
+            <div class="gallery-grid">
+                <img src="resources/img/photo1.jpg" th:src="@{/img/photo1.jpg}" alt="Product 1">
+                <img src="resources/img/photo2.jpg" th:src="@{/img/photo2.jpg}" alt="Product 2">
+                <img src="resources/img/photo3.jpg" th:src="@{/img/photo3.jpg}" alt="Product 3">
+                <img src="resources/img/photo4.jpg" th:src="@{/img/photo4.jpg}" alt="Product 4">
+                <img src="resources/img/photo5.jpg" th:src="@{/img/photo5.jpg}" alt="Product 5">
+                <img src="resources/img/photo6.jpg" th:src="@{/img/photo6.jpg}" alt="Product 6">
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer-band">
+            <div class="footer-grid">
+                <div class="footer-card">
+                    <h4>Contact</h4>
+                    <div class="muted">
+                        <a href="mailto:hello@TranquilPlate.example">hello@TranquilPlate.example</a><br>
+                        <a href="tel:+15551239876">(555) 123-9876</a>
+                        <span> • </span>
+                        <a class="wa-icon" href="https://wa.me/15551239876" target="_blank" rel="noopener">
+                            <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                                <path d="M16.04 3C9.49 3 4.2 8.29 4.2 14.84c0 2.32.65 4.54 1.88 6.45L4 29l7.97-2.07a11.8 11.8 0 0 0 4.07.72h.01c6.55 0 11.84-5.29 11.84-11.84C27.9 8.29 22.59 3 16.04 3zm0 2c5.45 0 9.88 4.43 9.88 9.88 0 5.45-4.43 9.88-9.88 9.88h-.01c-1.31 0-2.6-.26-3.79-.76l-.55-.23-4.72 1.23 1.26-4.59-.24-.57a9.8 9.8 0 0 1-.84-4.08c0-5.45 4.43-9.88 9.88-9.88zm-4.46 6.2c-.23 0-.47.08-.64.25-.26.26-1.01 1-1.01 2.44s1.04 2.84 1.18 3.03c.14.19 2.01 3.2 4.95 4.36 2.44.96 2.94.77 3.47.72.53-.05 1.72-.7 1.96-1.38.24-.68.24-1.27.17-1.38-.07-.12-.26-.19-.55-.34-.28-.14-1.72-.85-1.99-.95-.26-.1-.46-.14-.65.14-.19.28-.75.95-.92 1.15-.17.19-.34.22-.62.08-.28-.14-1.19-.44-2.26-1.41-.84-.75-1.4-1.68-1.56-1.96-.17-.28-.02-.44.13-.58.13-.13.28-.34.41-.51.14-.17.19-.28.28-.46.1-.19.05-.34-.02-.48-.07-.14-.65-1.57-.89-2.15-.23-.55-.47-.47-.65-.48z" />
+                            </svg>
+                            WhatsApp
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-card">
+                    <h4>Visit Us</h4>
+                    <div class="muted">
+                        <a href="https://www.google.com/maps/search/?api=1&query=Downtown%20-%20123%20Market%20St,%20Suite%205" target="_blank" rel="noopener">Downtown — 123 Market St, Suite 5</a><br>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Uptown%20-%2088%20Oak%20Avenue" target="_blank" rel="noopener">Uptown — 88 Oak Avenue</a>
+                    </div>
+                </div>
+                <div class="footer-card">
+                    <h4>Follow Us</h4>
+                    <div class="muted">
+                        Instagram: <a href="https://www.instagram.com/tranquilplate" target="_blank" rel="noopener">@tranquilplate</a><br>
+                        Facebook: <a href="https://www.facebook.com/tranquilplate" target="_blank" rel="noopener">/tranquilplate</a>
+                    </div>
+                </div>
+            </div>
+        <div style="max-width:1200px;margin:18px auto 0;color:var(--muted);font-size:0.9rem">© 2026 Tranquil Plate — All rights reserved</div>
+    </footer>
+        <script>
+            (function(){
+                const hero = document.querySelector('.hero');
+                const heroBg = document.querySelector('.hero-bg');
+                const about = document.querySelector('.about-band.scroll-reveal');
+                const gallery = document.querySelector('.gallery.scroll-reveal');
+                const galleryImgs = Array.from(document.querySelectorAll('.gallery-grid img'));
+                if(!hero) return;
+
+                // Parallax: move hero-bg slower than scroll
+                function parallax(){
+                    const sc = window.scrollY;
+                    const max = hero.offsetHeight;
+                    const y = Math.min(sc, max) * 0.25; // 25% speed
+                    if(heroBg) heroBg.style.transform = `translate3d(0, ${y}px, 0)`;
+                }
+
+                // Image parallax + tilt
+                function initImageMovement(){
+                    galleryImgs.forEach(img => {
+                        // randomize speed per image for organic movement
+                        const speed = (Math.random() * 0.28) + 0.12; // 0.12 - 0.4
+                        img.dataset.speed = speed;
+                        img._parallaxY = 0;
+                        img._hoverTransform = '';
+
+                        // tilt on mouse move
+                        img.addEventListener('mousemove', (e) => {
+                            const r = img.getBoundingClientRect();
+                            const dx = (e.clientX - (r.left + r.width/2)) / (r.width/2);
+                            const dy = (e.clientY - (r.top + r.height/2)) / (r.height/2);
+                            const rotY = dx * 6; // degrees
+                            const rotX = -dy * 6;
+                            const scale = 1.02;
+                            img._hoverTransform = `rotateX(${rotX}deg) rotateY(${rotY}deg) scale(${scale})`;
+                            updateImgTransform(img);
+                        });
+                        img.addEventListener('mouseleave', () => {
+                            img._hoverTransform = '';
+                            img.style.transition = 'transform .5s cubic-bezier(.2,.9,.3,1)';
+                            updateImgTransform(img);
+                            setTimeout(() => img.style.transition = '', 500);
+                        });
+                    });
+                }
+
+                function updateImgTransform(img){
+                    const ty = img._parallaxY || 0;
+                    const hover = img._hoverTransform || '';
+                    img.style.transform = `translate3d(0, ${ty}px, 0) ${hover}`;
+                }
+
+                function imageParallax(){
+                    const vh = window.innerHeight;
+                    galleryImgs.forEach(img => {
+                        const r = img.getBoundingClientRect();
+                        const imgCenter = r.top + r.height/2;
+                        const offset = (imgCenter - vh/2) / (vh/2); // -1 .. 1
+                        const speed = parseFloat(img.dataset.speed || 0.22);
+                        const ty = -offset * 30 * speed; // pixels
+                        img._parallaxY = ty;
+                        updateImgTransform(img);
+                    });
+                }
+
+                // Lift about/gallery when scrolling past hero
+                function checkLift(){
+                    const threshold = hero.offsetHeight - 80;
+                    const shouldLift = window.scrollY > threshold;
+                    if(about) about.classList.toggle('lift', shouldLift);
+                    if(gallery) gallery.classList.toggle('lift', shouldLift);
+                }
+
+                // Staggered reveal for gallery images using IntersectionObserver
+                const observer = new IntersectionObserver((entries, obs) => {
+                    entries.forEach(entry => {
+                        if(entry.isIntersecting){
+                            const imgs = galleryImgs.filter(i => i.classList.contains('hidden'));
+                            imgs.forEach((img, idx) => {
+                                setTimeout(() => img.classList.add('in'), idx * 80);
+                            });
+                            imgs.forEach(i => i.classList.remove('hidden'));
+                            obs.disconnect();
+                        }
+                    });
+                }, {rootMargin: '0px 0px -80px 0px', threshold: 0.05});
+                if(galleryImgs.length) galleryImgs.forEach(i => i.classList.add('hidden'));
+                const galleryGrid = document.querySelector('.gallery-grid');
+                if(galleryGrid) observer.observe(galleryGrid);
+
+                // Lightbox
+                const lightbox = document.createElement('div');
+                lightbox.id = 'lightbox';
+                lightbox.innerHTML = `
+                    <div class="lb-inner" role="dialog" aria-modal="true" tabindex="-1">
+                        <button class="lb-close" aria-label="Close">×</button>
+                        <button class="lb-prev" aria-label="Previous">‹</button>
+                        <img class="lb-img" src="" alt="">
+                        <button class="lb-next" aria-label="Next">›</button>
+                    </div>`;
+                document.body.appendChild(lightbox);
+                const lb = document.getElementById('lightbox');
+                const lbImg = lb.querySelector('.lb-img');
+                const lbClose = lb.querySelector('.lb-close');
+                const lbNext = lb.querySelector('.lb-next');
+                const lbPrev = lb.querySelector('.lb-prev');
+                const sources = galleryImgs.map(i => i.src);
+                let current = 0;
+
+                function openLightbox(idx){
+                    current = idx;
+                    lb.classList.add('open');
+                    lbImg.src = sources[current];
+                }
+                function closeLightbox(){ lb.classList.remove('open'); lbImg.src = ''; }
+                function next(){ current = (current+1) % sources.length; lbImg.src = sources[current]; }
+                function prev(){ current = (current-1+sources.length) % sources.length; lbImg.src = sources[current]; }
+
+                galleryImgs.forEach((img, idx) => {
+                    img.style.cursor = 'zoom-in';
+                    img.addEventListener('click', () => openLightbox(idx));
+                });
+                lbClose.addEventListener('click', closeLightbox);
+                lbNext.addEventListener('click', next);
+                lbPrev.addEventListener('click', prev);
+                lb.addEventListener('click', (e) => { if(e.target === lb) closeLightbox(); });
+                document.addEventListener('keydown', (e) => {
+                    if(!lb.classList.contains('open')) return;
+                    if(e.key === 'ArrowRight') next();
+                    if(e.key === 'ArrowLeft') prev();
+                    if(e.key === 'Escape') closeLightbox();
+                });
+
+                // Initialize image movement
+                initImageMovement();
+
+                // wire scroll events
+                function onScroll(){ parallax(); checkLift(); imageParallax(); }
+                window.addEventListener('scroll', onScroll, {passive:true});
+                window.addEventListener('resize', () => { parallax(); checkLift(); imageParallax(); });
+                document.addEventListener('DOMContentLoaded', () => { parallax(); checkLift(); imageParallax(); });
+                parallax(); checkLift(); imageParallax();
+            })();
+        </script>
+        <style>
+            /* lightbox styles */
+            #lightbox{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.65);opacity:0;pointer-events:none;transition:opacity .25s ease;z-index:120}
+            #lightbox.open{opacity:1;pointer-events:auto}
+            #lightbox .lb-inner{position:relative;max-width:92vw;max-height:92vh}
+            #lightbox .lb-img{max-width:100%;max-height:100%;display:block;border-radius:8px}
+            #lightbox .lb-close,#lightbox .lb-prev,#lightbox .lb-next{position:absolute;top:12px;background:transparent;border:none;color:white;font-size:28px;padding:8px;cursor:pointer}
+            #lightbox .lb-close{right:12px}
+            #lightbox .lb-prev{left:-48px;top:50%;transform:translateY(-50%);font-size:48px}
+            #lightbox .lb-next{right:-48px;top:50%;transform:translateY(-50%);font-size:48px}
+            @media(max-width:700px){#lightbox .lb-prev{left:8px}#lightbox .lb-next{right:8px}}
+        </style>
+        <div class="promo-band">
+            <button class="promo-btn" type="button">Create your website for FREE!!!</button>
+        </div>
+</body>
+</html>
