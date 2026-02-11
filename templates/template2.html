@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Serene Shop - Modern boutique for everyday elegance</title>
+    <title>Tranquil Plate</title>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root{
@@ -36,22 +36,6 @@
             position:relative;
             padding-bottom:var(--promo-height);
         }
-        header{
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
-            padding:18px 6vw;
-            position:absolute;
-            top:0;
-            left:0;
-            right:0;
-            z-index:3;
-        }
-        .brand{
-            font-family:"Fraunces",serif;
-            font-size:1.4rem;
-            letter-spacing:0.8px;
-        }
         .split{
             display:grid;
             grid-template-columns:1fr 1fr;
@@ -69,36 +53,6 @@
             background:transparent;
             display:flex;
             flex-direction:column;
-        }
-        .right-header{
-            background:var(--paper);
-            padding:26px 6vw 18px;
-            box-shadow:var(--shadow);
-        }
-        .right-header .hero-badge{
-            margin-bottom:10px;
-        }
-        .hero{
-            display:flex;
-            flex-direction:column;
-            gap:18px;
-        }
-        .hero-copy{
-            background:var(--paper);
-            border-radius:16px;
-            padding:28px;
-            box-shadow:var(--shadow);
-            position:relative;
-            overflow:hidden;
-        }
-        .hero-copy::before{
-            content:"";
-            position:absolute;
-            inset:0;
-            background:
-                linear-gradient(135deg, rgba(11,108,116,0.12), transparent 60%),
-                linear-gradient(225deg, rgba(182,87,59,0.10), transparent 60%);
-            pointer-events:none;
         }
         .hero-badge{
             display:inline-flex;
@@ -368,15 +322,15 @@
                 <div class="hero-image" aria-hidden="true" style="background-image:url('resources/img/hero-image.jpg')" th:style="|background-image: url('@{/img/photo1.jpg}')|">
                     <div class="hero-overlay">
                         <div class="hero-badge">Handcrafted • Locally Sourced • Timeless</div>
-                        <h1>Serene Shop - Modern boutique for everyday elegance</h1>
-                        <p>We curate a collection of home goods, accessories, and small-batch gifts that blend calm aesthetics with practical design. Drop by to find something uniquely yours.</p>
+                        <h1>Tranquil Plate - A peaceful place for flavorful moments</h1>
+                        <p>Where every plate is carefully crafted to delight the senses, in a serene and inviting setting. Find your new favorite dish here.</p>
                     </div>
                 </div>
                 <section class="left-footer">
                     <div>
                         <h4>Contact</h4>
                         <div class="muted">
-                            <a href="mailto:hello@sereneshop.example">hello@sereneshop.example</a><br>
+                            <a href="mailto:hello@TranquilPlate.example">hello@TranquilPlate.example</a><br>
                             <a href="tel:+15551239876">(555) 123-9876</a>
                             <span> • </span>
                             <a class="wa-icon" href="https://wa.me/15551239876" target="_blank" rel="noopener">
@@ -390,8 +344,8 @@
                     <div>
                         <h4>Follow Us</h4>
                         <div class="muted">
-                            Instagram: <a href="https://www.instagram.com/sereneshop" target="_blank" rel="noopener">@sereneshop</a><br>
-                            Facebook: <a href="https://www.facebook.com/sereneshop" target="_blank" rel="noopener">/sereneshop</a>
+                            Instagram: <a href="https://www.instagram.com/tranquilplate" target="_blank" rel="noopener">@tranquilplate</a><br>
+                            Facebook: <a href="https://www.facebook.com/tranquilplate" target="_blank" rel="noopener">/tranquilplate</a>
                         </div>
                     </div>
                     <div class="span-2">
@@ -401,13 +355,14 @@
                             <a href="https://www.google.com/maps/search/?api=1&query=Uptown%20-%2088%20Oak%20Avenue" target="_blank" rel="noopener">Uptown — 88 Oak Avenue</a>
                         </div>
                     </div>
-                    <div class="legal span-2">© 2026 Serene Shop — All rights reserved</div>
+                    <div class="legal span-2">© 2026 Tranquil Plate — All rights reserved</div>
                 </section>
             </div>
             <div class="right">
                 <section class="about-band">
-                    <h2>About Serene Shop</h2>
-                    <p>Founded in 2022, our boutique focuses on slow-crafted items made with attention and care. We prioritize sustainable materials and local artisans. Come see our seasonal edits and enjoy a relaxed shopping experience.Founded in 2022, our boutique focuses on slow-crafted items made with attention and care. We prioritize sustainable materials and local artisans. Come see our seasonal edits and enjoy a relaxed shopping experience.</p>
+                    <h2>About Us</h2>
+                    <p>We are a modern dining destination where every detail is curated from our plates to our ambiance. Our menu blends seasonal ingredients, classic techniques, and innovative flavors to create a dining experience that is both comforting and exciting.
+We invite you to slow down, savor each bite, and discover new favorites in a space designed for calm, connection, and culinary delight.</p>
                 </section>
                 <section class="gallery">
                     <div class="gallery-grid">
