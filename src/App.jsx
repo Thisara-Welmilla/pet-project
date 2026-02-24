@@ -27,6 +27,7 @@ const steps = [
 
 function App() {
   const [showToast, setShowToast] = useState(false);
+  const basePath = import.meta.env.BASE_URL;
   const openWhatsApp = () => {
     const url = 'https://wa.me/0714346977?text=Hi%2C%20I%27d%20like%20help%20getting%20started';
     window.open(url, '_blank', 'noopener');
@@ -69,7 +70,7 @@ function App() {
                 <p>{step.body}</p>
                 {step.label === '01' && (
                   <a 
-                    href="/webbxy" 
+                    href={basePath} 
                     className="secondary-btn secondary-btn--red"
                   >
                     See example templates
@@ -122,13 +123,13 @@ function App() {
               <h3>Template 1</h3>
               <div className="iframe-wrapper">
                 <iframe 
-                  src="/webbxy/template1.html" 
+                  src={`${basePath}template1.html`} 
                   title="Template 1 Preview"
                   scrolling="yes"
                 />
               </div>
               <a 
-                href="/webbxy/template1.html" 
+                href={`${basePath}template1.html`} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="secondary-btn secondary-btn--red"
@@ -141,13 +142,13 @@ function App() {
               <h3>Template 2</h3>
               <div className="iframe-wrapper">
                 <iframe 
-                  src="/webbxy/template2.html" 
+                  src={`${basePath}template2.html`} 
                   title="Template 2 Preview"
                   scrolling="yes"
                 />
               </div>
               <a 
-                href="/webbxy/template2.html" 
+                href={`${basePath}template2.html`} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="secondary-btn secondary-btn--red"

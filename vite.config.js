@@ -3,14 +3,13 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/webbxy/',
+  base: '/pet-project/',
   plugins: [react()],
-  // dev server middleware: rewrite /webbxy/* -> /* so dev serves app at /webbxy
+  // dev server middleware: rewrite /pet-project/* -> /* so local dev matches GitHub Pages base
   configureServer(server) {
     server.middlewares.use((req, res, next) => {
-      if (req.url && req.url.startsWith('/webbxy')) {
-        // strip the prefix so Vite serves the index and assets correctly
-        req.url = req.url.replace(/^\/webbxy/, '') || '/';
+      if (req.url && req.url.startsWith('/pet-project')) {
+        req.url = req.url.replace(/^\/pet-project/, '') || '/';
       }
       next();
     });
