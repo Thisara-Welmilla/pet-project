@@ -8,3 +8,13 @@ createRoot(document.getElementById('root')).render(
     <App />
   </StrictMode>,
 )
+
+// Reveal root after React has mounted to avoid flash of unstyled content
+const rootEl = document.getElementById('root');
+if (rootEl) rootEl.style.visibility = 'visible';
+// Reveal the body only after React has mounted and hydrated
+try {
+  document.body.style.visibility = 'visible';
+} catch (e) {
+  // ignore if document body not available
+}
